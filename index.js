@@ -1,4 +1,4 @@
-const Layout = [
+const Symbols = [
   [
     ['Backquote', 'ё', 'Ё', '`', '~'],
     ['Digit1', '1', '!', '1', '!'],
@@ -88,7 +88,7 @@ wrapper.append(textarea);
 wrapper.append(keyboard);
 document.body.append(wrapper);
 
-Layout.forEach(el => {
+Symbols.forEach(el => {
   const row = document.createElement('div');
   row.className = 'row';
   el.forEach(elTwo => {
@@ -111,16 +111,16 @@ Layout.forEach(el => {
   keyboard.appendChild(row);
 });
 
-const throttle = (func, ms) => {
+function throttle(func, ms) {
   let lastCall = 0;
-  return () => {
+  return function() {
     let now = Date.now();
     if (lastCall + ms < now) {
       lastCall = now;
       return func.apply(this, arguments);
     }
   };
-};
+}
 
 const addActiveClass = el => {
   el.classList.add('active');
@@ -128,6 +128,14 @@ const addActiveClass = el => {
 
 const removeActiveClass = el => {
   el.classList.remove('active');
+};
+
+const changeCase = () => {
+  const langEl = keyboard.querySelectorAll(`div > .${language}`);
+  langEl.forEach(el => {
+    el.querySelectorAll('span')[0].classList.toggle('hidden');
+    el.querySelectorAll('span')[1].classList.toggle('hidden');
+  });
 };
 
 const changeLanguage = () => {
@@ -149,3 +157,82 @@ const changeLanguage = () => {
     el.querySelectorAll('span')[0].classList.toggle('hidden');
   });
 };
+
+if (localStorage.lang === 'eng') {
+  changeLanguage();
+}
+
+textarea.addEventListener('keydown', event => {
+  event.preventDefault();
+});
+
+document.addEventListener(
+  'keydown',
+  throttle(event => {
+    const el = keyboard.getElementsByClassName(event.code)[0];
+    if (
+      event.altKey &&
+      event.ctrlKey &&
+      (event.keyCode === 18 || event.keyCode === 17)
+    ) {
+      addActiveClass(el);
+      changeLanguage();
+      return false;
+    }
+    switch (event.code) {
+      case 'Tab':
+        event.preventDefault();
+        addActiveClass(el);
+        textarea.value += '    ';
+        break;
+      case 'CapsLock':
+        if (capsLock) {
+          removeActiveClass(el);
+          capsLock = false;
+        } else {
+          addActiveClass(el);
+          capsLock = true;
+        }
+        event.preventDefault();
+        changeCase();
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        event.preventDefault();
+        addActiveClass(el);
+        changeCase();
+        break;
+      case 'ControlLeft':
+      case 'ControlRight':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      case 'MetaLeft':
+        break;
+      case 'AltLeft':
+      case 'AltRight':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        addActiveClass(el);
+        textarea.value += '\n';
+        break;
+      case 'Backspace':
+        textarea.value = textarea.value.substr(0, textarea.value.length - 1);
+        addActiveClass(el);
+        break;
+      case 'Delete':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      default:
+        addActiveClass(el);
+        textarea.value += el.querySelectorAll(':not(.hidden)')[1].textContent;
+        break;
+    }
+
+    console.log(el);
+  }, 10)
+);

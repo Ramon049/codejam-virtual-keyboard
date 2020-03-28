@@ -1,20 +1,66 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
-    display: flex;
+  width: 100vw;
+  height: 100vh;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 
 .wrapper {
-    width: 80%;
-    height: 80%;
-    margin: 0 auto;
+  width: 80%;
+  height: 80%;
+  margin: 0 auto;
 }
 
+.hidden {
+  display: none;
+}
+
+.keyboard {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.keyboard .row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.keyboard .row .key {
+  background-color: palegreen;
+  color: coral;
+  border: olivedrab 1px solid;
+}
+
+.keyboard .row .key .active {
+  background-color: coral;
+  color: palegreen;
+}
+
+.keyboard .row .key div {
+  padding: 1em;
+  font-size: 1rem;
+}
+/*# sourceMappingURL=style.css.map */
