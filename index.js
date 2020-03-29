@@ -13,7 +13,7 @@ const Symbols = [
     ['Digit0', '0', ')', '0', ')'],
     ['Minus', '-', '_', '-', '_'],
     ['Equal', '=', '+', '=', '+'],
-    ['Backspace', 'Backspace', 'Backspace', 'Backspace', 'Backspace']
+    ['Backspace', 'Backspace', 'Backspace', 'Backspace', 'Backspace'],
   ],
   [
     ['Tab', 'Tab', 'Tab', 'Tab', 'Tab'],
@@ -30,7 +30,7 @@ const Symbols = [
     ['BracketLeft', 'х', 'Х', '[', '{'],
     ['BracketRight', 'ъ', 'Ъ', ']', '}'],
     ['Backslash', '\\', '/', '\\', '|'],
-    ['Delete', 'Del', 'Del', 'Del', 'Del']
+    ['Delete', 'Del', 'Del', 'Del', 'Del'],
   ],
   [
     ['CapsLock', 'CapsLock', 'CapsLock', 'CapsLock', 'CapsLock', 'CapsLock'],
@@ -45,7 +45,7 @@ const Symbols = [
     ['KeyL', 'д', 'Д', 'l', 'L'],
     ['Semicolon', 'ж', 'Ж', ';', ':'],
     ['Quote', 'э', 'Э', "'", "'"],
-    ['Enter', 'Enter', 'Enter', 'Enter', 'Enter']
+    ['Enter', 'Enter', 'Enter', 'Enter', 'Enter'],
   ],
   [
     ['ShiftLeft', 'Shift', 'Shift', 'Shift', 'Shift'],
@@ -60,7 +60,7 @@ const Symbols = [
     ['Period', 'ю', 'Ю', ',', '>'],
     ['Slash', '.', ',', '/', '?'],
     ['ArrowUp', '▲', '▲', '▲', '▲'],
-    ['ShiftRight', 'Shift', 'Shift', 'Shift', 'Shift']
+    ['ShiftRight', 'Shift', 'Shift', 'Shift', 'Shift'],
   ],
   [
     ['ControlLeft', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
@@ -71,8 +71,8 @@ const Symbols = [
     ['ArrowLeft', '◄', '◄', '◄', '◄'],
     ['ArrowDown', '▼', '▼', '▼', '▼'],
     ['ArrowRight', '►', '►', '►', '►'],
-    ['ControlRight', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl']
-  ]
+    ['ControlRight', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
+  ],
 ];
 
 const wrapper = document.createElement('section');
@@ -88,10 +88,10 @@ wrapper.append(textarea);
 wrapper.append(keyboard);
 document.body.append(wrapper);
 
-Symbols.forEach(el => {
+Symbols.forEach((el) => {
   const row = document.createElement('div');
   row.className = 'row';
-  el.forEach(elTwo => {
+  el.forEach((elTwo) => {
     const key = document.createElement('div');
     key.className = `key ${elTwo[0]}`;
     key.insertAdjacentHTML(
@@ -113,7 +113,7 @@ Symbols.forEach(el => {
 
 function throttle(func, ms) {
   let lastCall = 0;
-  return function() {
+  return function () {
     let now = Date.now();
     if (lastCall + ms < now) {
       lastCall = now;
@@ -122,17 +122,17 @@ function throttle(func, ms) {
   };
 }
 
-const addActiveClass = el => {
+const addActiveClass = (el) => {
   el.classList.add('active');
 };
 
-const removeActiveClass = el => {
+const removeActiveClass = (el) => {
   el.classList.remove('active');
 };
 
 const changeCase = () => {
   const langEl = keyboard.querySelectorAll(`div > .${language}`);
-  langEl.forEach(el => {
+  langEl.forEach((el) => {
     el.querySelectorAll('span')[0].classList.toggle('hidden');
     el.querySelectorAll('span')[1].classList.toggle('hidden');
   });
@@ -140,7 +140,7 @@ const changeCase = () => {
 
 const changeLanguage = () => {
   const prevLang = keyboard.querySelectorAll(`div > .${language}`);
-  prevLang.forEach(el => {
+  prevLang.forEach((el) => {
     el.classList.toggle('hidden');
     el.querySelectorAll('span')[0].classList.toggle('hidden');
   });
@@ -152,7 +152,7 @@ const changeLanguage = () => {
     localStorage.setItem('language', language);
   }
   const nextLanguage = keyboard.querySelectorAll(`div > .${language}`);
-  nextLanguage.forEach(el => {
+  nextLanguage.forEach((el) => {
     el.classList.toggle('hidden');
     el.querySelectorAll('span')[0].classList.toggle('hidden');
   });
@@ -162,13 +162,13 @@ if (localStorage.lang === 'eng') {
   changeLanguage();
 }
 
-textarea.addEventListener('keydown', event => {
+textarea.addEventListener('keydown', (event) => {
   event.preventDefault();
 });
 
 document.addEventListener(
   'keydown',
-  throttle(event => {
+  throttle((event) => {
     const el = keyboard.getElementsByClassName(event.code)[0];
     if (
       event.altKey &&
@@ -236,3 +236,115 @@ document.addEventListener(
     console.log(el);
   }, 10)
 );
+
+document.addEventListener('keyup', (event) => {
+  const el = keyboard.getElementsByClassName(event.code)[0];
+  switch (event.code) {
+    case 'ShiftLeft':
+    case 'ShiftRight':
+      event.preventDefault();
+      removeActiveClass(el);
+      changeCase();
+      break;
+    case 'CapsLock':
+      break;
+    default:
+      removeActiveClass(el);
+      break;
+  }
+});
+
+keyboard.addEventListener('mousedown', (event) => {
+  if (event.target.tagName === 'SPAN') {
+    const el = event.target.closest('.key');
+    switch (el.classList[1]) {
+      case 'MetaLeft':
+        event.preventDefault();
+        break;
+      case 'Tab':
+        event.preventDefault();
+        addActiveClass(el);
+        textarea.value += '    ';
+        break;
+      case 'Enter':
+        event.preventDefault();
+        addActiveClass(el);
+        textarea.value += '\n';
+        break;
+      case 'Backspace':
+        textarea.value = textarea.value.substring(0, textarea.value.length - 1);
+        addActiveClass(el);
+        break;
+      case 'CapsLock':
+        event.preventDefault();
+        if (capsLock) {
+          removeActiveClass(el);
+          capsLock = false;
+        } else {
+          addActiveClass(el);
+          capsLock = true;
+        }
+        changeCase();
+        break;
+      case 'Delete':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      case 'AltLeft':
+      case 'AltRight':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      case 'ControlLeft':
+      case 'ControlRight':
+        event.preventDefault();
+        addActiveClass(el);
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        event.preventDefault();
+        addActiveClass(el);
+        changeCase();
+        break;
+      default:
+        addActiveClass(el);
+        textarea.value += el.querySelectorAll(':not(.hidden)')[1].textContent;
+        break;
+    }
+  } else {
+    event.preventDefault();
+  }
+});
+
+keyboard.addEventListener('mouseup', (event) => {
+  const el = event.target.closest('.key');
+  switch (el.classList[1]) {
+    case 'ShiftLeft':
+    case 'ShiftRight':
+      event.preventDefault();
+      removeActiveClass(el);
+      changeCase();
+      break;
+    case 'CapsLock':
+      event.preventDefault();
+      if (!capsLock) {
+        removeActiveClass(el);
+      } else {
+        addActiveClass(el);
+      }
+      break;
+    default:
+      removeActiveClass(el);
+      break;
+  }
+});
+
+keyboard.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+});
+
+keyboard.addEventListener('dblclick', (event) => {
+  event.preventDefault();
+});
+
+document.body.append(wrapper);

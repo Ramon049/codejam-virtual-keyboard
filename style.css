@@ -59,7 +59,7 @@ body {
   color: palegreen;
 }
 
-.keyboard .row .key div {
+.keyboard .row .key div span {
   padding: 1em;
   font-size: 1rem;
 }
